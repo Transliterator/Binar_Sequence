@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -48,7 +50,7 @@
 
   <div class="input-area">
     <label for="repeatLength">Кількість однакових чисел в послідовності:</label>
-    <input type="number" id="repeatLength" value="3" min="2" max="30" />
+    <input type="number" id="repeatLength" value="3" min="2" max="300" />
   </div>
 
   <div class="input-area">
@@ -58,7 +60,7 @@
   </div>
 
   <div class="section">
-    <div class="indices" id="indices30"></div>
+    <div class="indices" id="indices300"></div>
     <div id="sequencesContainer"></div>
     <div id="longestSequenceContainer"></div>
     <div id="maxGeneratedInfo"></div>
@@ -71,9 +73,9 @@
     }
 
     function generateIndices() {
-      const indicesContainer = document.getElementById('indices30');
+      const indicesContainer = document.getElementById('indices300');
       indicesContainer.innerHTML = '';
-      for (let i = 1; i <= 30; i++) {
+      for (let i = 1; i <= 300; i++) {
         const div = document.createElement('div');
         div.className = 'colored-number';
         div.textContent = i;
@@ -106,7 +108,7 @@
     function displayRow(container, numbers, highlightIndices) {
       const row = document.createElement('div');
       row.className = 'number-sequence';
-      numbers.slice(0, 30).forEach((num, i) => {
+      numbers.slice(0, 300).forEach((num, i) => {
         const div = document.createElement('div');
         div.className = 'colored-number';
         div.textContent = num === 0 ? 'N' : 'Y';
@@ -165,3 +167,4 @@
   </script>
 </body>
 </html>
+
