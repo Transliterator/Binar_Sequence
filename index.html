@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Бінарна послідовність</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .number-sequence {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    .colored-number {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border-radius: 4px;
+      background-color: #f0f0f0;
+    }
+    .highlight {
+      background-color: #ffff99 !important;
+      color: black;
+    }
+    .indices {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .input-area {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Бінарна послідовність</h2>
+
+  <div class="input-area">
+    <label for="repeatLength">Кількість однакових чисел в послідовності:</label>
+    <input type="number" id="repeatLength" value="3" min="2" max="30" />
+  </div>
+
+  <div class="input-area">
+    <label for="numSequences">Кількість послідовностей для генерації:</label>
+    <input type="number" id="numSequences" value="10" min="1" max="1000" />
+    <button onclick="generateAll()">Згенерувати</button>
+  </div>
+
+  <div class="section">
+    <div class="indices" id="indices30"></div>
+    <div id="sequencesContainer"></div>
+    <div id="longestSequenceContainer"></div>
+    <div id="maxGeneratedInfo"></div>
+    <div id="minGeneratedInfo"></div>
+  </div>
+
+  <script>
+    function getRandomBinary() {
+      return Math.random() < 0.5 ? 0 : 1;
+    }
+
+    function generateIndices() {
+      const indicesContainer = document.getElementById('indices30');
+      indicesContainer.innerHTML = '';
+      for (let i = 1; i <= 30; i++) {
+        const div = document.createElement('div');
+        div.className = 'colored-number';
+        div.textContent = i;
+        indicesContainer.appendChild(div);
+      }
+    }
+
+    function findYRepeatSubsequence(numbers, length) {
+      for (let i = 0; i <= numbers.length - length; i++) {
+        const slice = numbers.slice(i, i + length);
+        if (slice.every(n => n === 1)) {
+          return Array.from({ length }, (_, j) => i + j);
+        }
+      }
+      return [];
+    }
+
+    function generateRandomUntilYRepeat(repeatLen) {
+      const numbers = [];
+      let matchIndices = [];
+
+      while (matchIndices.length === 0) {
+        numbers.push(getRandomBinary());
+        matchIndices = findYRepeatSubsequence(numbers, repeatLen);
+      }
+
+      return { numbers, matchIndices };
+    }
+
+    function displayRow(container, numbers, highlightIndices) {
+      const row = document.createElement('div');
+      row.className = 'number-sequence';
+      numbers.slice(0, 30).forEach((num, i) => {
+        const div = document.createElement('div');
+        div.className = 'colored-number';
+        div.textContent = num === 0 ? 'N' : 'Y';
+        if (highlightIndices.includes(i)) div.classList.add('highlight');
+        row.appendChild(div);
+      });
+      container.appendChild(row);
+    }
+
+    function generateAll() {
+      const N = parseInt(document.getElementById('numSequences').value);
+      const repeatLen = parseInt(document.getElementById('repeatLength').value);
+
+      generateIndices();
+
+      const container = document.getElementById('sequencesContainer');
+      container.innerHTML = '';
+      document.getElementById('longestSequenceContainer').innerHTML = '';
+      document.getElementById('maxGeneratedInfo').innerHTML = '';
+      document.getElementById('minGeneratedInfo').innerHTML = '';
+
+      let maxGenerated = 0;
+      let minGenerated = Infinity;
+      let maxSet = null;
+
+      for (let i = 0; i < N; i++) {
+        const { numbers, matchIndices } = generateRandomUntilYRepeat(repeatLen);
+        if (numbers.length > maxGenerated) {
+          maxGenerated = numbers.length;
+          maxSet = { numbers, matchIndices };
+        }
+        if (numbers.length < minGenerated) {
+          minGenerated = numbers.length;
+        }
+        if (i < 10) {
+          displayRow(container, numbers, matchIndices);
+        }
+      }
+
+      if (maxSet) {
+        const title = document.createElement('div');
+        title.style.marginTop = '20px';
+        title.innerHTML = '<strong>Найдовша послідовність до повтору Y:</strong>';
+        document.getElementById('longestSequenceContainer').appendChild(title);
+        displayRow(document.getElementById('longestSequenceContainer'), maxSet.numbers, maxSet.matchIndices);
+      }
+
+      document.getElementById('maxGeneratedInfo').textContent =
+        `Максимальна довжина перед ${repeatLen}-разовим повтором Y: ${maxGenerated}`;
+
+      document.getElementById('minGeneratedInfo').textContent =
+        `Мінімальна довжина перед ${repeatLen}-разовим повтором Y: ${minGenerated}`;
+    }
+
+    window.onload = generateAll;
+  </script>
+</body>
+</html>
